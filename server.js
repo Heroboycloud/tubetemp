@@ -15,7 +15,7 @@ app.use(express.static('public'));
 // YouTube API setup
 const youtube = google.youtube({
   version: 'v3',
-  auth: 'YOUR_GOOGLE_API_KEY' // Replace with your API key
+  auth: process.env.YOUTUBE_API_KEY
 });
 
 // Extract video ID from URL
