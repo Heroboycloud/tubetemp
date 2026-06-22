@@ -507,9 +507,19 @@
     const errorMessage = document.getElementById('errorMessage');
     const errorText = document.getElementById('errorText');
 
+    function rewriteShortsUrl(url) {
+        const shortsMatch = url.match(/youtube\.com\/shorts\/([\w-]+)/);
+        if (shortsMatch) {
+            const rewritten = `https://youtu.be/${shortsMatch[1]}`;
+            videoUrlInput.value = rewritten;
+            return rewritten;
+        }
+        return url;
+    }
+
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
-        const videoUrl = videoUrlInput.value.trim();
+        const videoUrl = rewriteShortsUrl(videoUrlInput.value.trim());
         if (!videoUrl) { showError('Please enter a YouTube URL'); return; }
 
         resultsDiv.style.display = 'none';

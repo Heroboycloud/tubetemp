@@ -23,7 +23,8 @@ function extractVideoId(url) {
   const patterns = [
     /(?:youtube\.com\/watch\?v=)([\w-]+)/,
     /(?:youtu\.be\/)([\w-]+)/,
-    /(?:youtube\.com\/embed\/)([\w-]+)/
+    /(?:youtube\.com\/embed\/)([\w-]+)/,
+    /(?:youtube\.com\/shorts\/)([\w-]+)/
   ];
   
   for (let pattern of patterns) {
