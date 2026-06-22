@@ -4,7 +4,7 @@ const Sentiment = require('sentiment');
 const cors = require('cors');
 
 const app = express();
-const PORT = 3000;
+const PORT = 5000;
 const sentiment = new Sentiment();
 
 // Middleware
