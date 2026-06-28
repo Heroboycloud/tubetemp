@@ -1,3 +1,4 @@
+const path= require("path");
 const express = require('express');
 const { google } = require('googleapis');
 const Sentiment = require('sentiment');
@@ -169,6 +170,12 @@ app.post('/api/analyze', async (req, res) => {
 app.get('/api/health', (req, res) => {
   res.json({ status: 'OK', timestamp: new Date().toISOString() });
 });
+
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'index.html'));
+});
+
+
 
 app.listen(PORT, () => {
   console.log(`🚀 Server running at http://localhost:${PORT}`);
