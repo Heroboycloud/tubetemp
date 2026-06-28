@@ -10,7 +10,7 @@ const sentiment = new Sentiment();
 // Middleware
 app.use(cors());
 app.use(express.json());
-app.use(express.static('public'));
+//app.use(express.static('public'));
 
 // YouTube API setup
 const youtube = google.youtube({
