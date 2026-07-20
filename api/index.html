@@ -460,6 +460,14 @@
         ::-webkit-scrollbar-track { background: var(--bg); }
         ::-webkit-scrollbar-thumb { background: var(--surface2); border-radius: 3px; }
     </style>
+<script>
+    // Guard: only signed-in users can view the dashboard
+    const tubetempUser = localStorage.getItem('tubetemp_user');
+    if (!tubetempUser) {
+        window.location.href = '/';
+    }
+</script>
+
 </head>
 <body>
 <div class="page-wrap">
