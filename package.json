@@ -13,6 +13,7 @@
     "axios": "^1.18.1",
     "cors": "^2.8.6",
     "express": "^5.2.1",
+    "@supabase/supabase-js": "^2.45.0",
     "googleapis": "^173.0.0",
     "sentiment": "^5.0.2"
   },

@@ -171,13 +171,12 @@ app.get('/api/health', (req, res) => {
 });
 
 // --- Google sign-in (name + email only) ---
-// NOTE: this is an in-memory store for demo purposes. On Vercel, serverless
-// functions are stateless between cold starts, so this will NOT reliably
-// persist users in production — swap it for a real database (e.g. Postgres,
-// Supabase, MongoDB Atlas) before relying on this for real accounts.
-const users = [];
+// Users are persisted in Supabase. Requires SUPABASE_URL and
+// SUPABASE_SERVICE_ROLE_KEY to be set as environment variables.
+const { createClient } = require('@supabase/supabase-js');
+const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
 
-app.post('/api/auth/google', (req, res) => {
+app.post('/api/auth/google', async (req, res) => {
   const { name, email } = req.body || {};
 
   if (!name || !email) {
@@ -187,13 +186,34 @@ app.post('/api/auth/google', (req, res) => {
     return res.status(400).json({ error: 'Invalid email address' });
   }
 
-  let user = users.find(u => u.email === email);
-  if (!user) {
-    user = { name, email, createdAt: new Date().toISOString() };
-    users.push(user);
-  }
+  try {
+    // Look for an existing user
+    const { data: existing, error: findError } = await supabase
+      .from('users')
+      .select('*')
+      .eq('email', email)
+      .maybeSingle();
 
-  res.json({ success: true, user });
+    if (findError) throw findError;
+
+    if (existing) {
+      return res.json({ success: true, user: existing });
+    }
+
+    // Create a new user
+    const { data: created, error: insertError } = await supabase
+      .from('users')
+      .insert({ name, email })
+      .select()
+      .single();
+
+    if (insertError) throw insertError;
+
+    res.json({ success: true, user: created });
+  } catch (err) {
+    console.error('Supabase auth error:', err.message);
+    res.status(500).json({ error: 'Failed to save user' });
+  }
 });
 
 // Login / landing page — first thing a visitor sees
