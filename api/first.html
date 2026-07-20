@@ -423,29 +423,6 @@
         .pill-negative { background: rgba(239,68,68,0.15); color: #f87171; border: 1px solid rgba(239,68,68,0.3); }
         .pill-neutral  { background: rgba(148,163,184,0.1); color: #94a3b8; border: 1px solid rgba(148,163,184,0.2); }
 
-        .comments-header-actions {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        .csv-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            background: var(--surface2);
-            border: 1px solid var(--border);
-            color: var(--text);
-            font-size: 0.78rem;
-            font-weight: 600;
-            font-family: 'Inter', sans-serif;
-            padding: 6px 14px;
-            border-radius: 50px;
-            cursor: pointer;
-            transition: background 0.2s, border-color 0.2s;
-        }
-        .csv-btn:hover { background: rgba(124,58,237,0.15); border-color: rgba(124,58,237,0.4); }
-        .csv-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-
         /* FOOTER */
         footer {
             text-align: center;
@@ -529,7 +506,6 @@
     const loadingSpinner = document.getElementById('loadingSpinner');
     const errorMessage = document.getElementById('errorMessage');
     const errorText = document.getElementById('errorText');
-    let lastAnalysisData = null;
 
     function rewriteShortsUrl(url) {
         const shortsMatch = url.match(/youtube\.com\/shorts\/([\w-]+)/);
@@ -628,10 +604,7 @@
         <div class="comments-wrap animate-in" style="animation-delay:0.3s">
             <div class="comments-header">
                 <h5><i class="bi bi-chat-left-dots-fill" style="color:var(--purple-light);margin-right:8px"></i>Top Comments</h5>
-                <div class="comments-header-actions">
-                    <span>Showing ${analysis.comments.length} of ${analysis.totalComments}</span>
-                    <button class="csv-btn" id="csvExportBtn"><i class="bi bi-download"></i> Export CSV</button>
-                </div>
+                <span>Showing ${analysis.comments.length} of ${analysis.totalComments}</span>
             </div>
         `;
 
@@ -655,46 +628,6 @@
 
         html += `</div>`;
         resultContent.innerHTML = html;
-
-        // Keep the full result set around for CSV export, then wire up the button
-        lastAnalysisData = data;
-        document.getElementById('csvExportBtn').addEventListener('click', exportCommentsToCSV);
-    }
-
-    function csvEscape(value) {
-        const str = String(value ?? '');
-        if (/[",\n]/.test(str)) {
-            return `"${str.replace(/"/g, '""')}"`;
-        }
-        return str;
-    }
-
-    function exportCommentsToCSV() {
-        if (!lastAnalysisData) return;
-        const { analysis, videoId } = lastAnalysisData;
-        const comments = analysis.comments;
-
-        const headers = ['Author', 'Comment', 'Likes', 'Published At', 'Sentiment', 'Sentiment Score', 'Comparative'];
-        const rows = comments.map(c => [
-            csvEscape(c.author),
-            csvEscape(c.text),
-            csvEscape(c.likes),
-            csvEscape(c.publishedAt),
-            csvEscape(c.sentiment),
-            csvEscape(c.sentimentScore),
-            csvEscape(c.comparative)
-        ].join(','));
-
-        const csvContent = [headers.join(','), ...rows].join('\n');
-        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = `tubetemp-comments-${videoId}.csv`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
     }
 
     function showError(message) {

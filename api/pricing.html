@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TubeTemp — Pricing</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --red: #ff3b3b;
+            --purple: #7c3aed;
+            --purple-light: #a78bfa;
+            --bg: #0d0d0f;
+            --surface: #16161a;
+            --surface2: #1e1e24;
+            --border: rgba(255,255,255,0.07);
+            --text: #f0f0f5;
+            --muted: #6b6b7b;
+            --radius: 16px;
+            --radius-sm: 10px;
+        }
+
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
+
+        body::before, body::after { content: ''; position: fixed; border-radius: 50%; filter: blur(120px); z-index: 0; pointer-events: none; }
+        body::before { width: 500px; height: 500px; background: rgba(124,58,237,0.15); top: -100px; left: -100px; }
+        body::after { width: 400px; height: 400px; background: rgba(255,59,59,0.1); bottom: 0; right: -100px; }
+
+        .page-wrap { position: relative; z-index: 1; max-width: 1040px; margin: 0 auto; padding: 0 20px 80px; }
+
+        nav { display: flex; align-items: center; justify-content: space-between; padding: 24px 0; }
+        .logo { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 1.3rem; letter-spacing: -0.5px; text-decoration:none; color:var(--text); }
+        .logo .dot { width: 10px; height: 10px; background: var(--red); border-radius: 50%; display: inline-block; animation: pulse 2s infinite; }
+        @keyframes pulse { 0%,100% { opacity:1; transform:scale(1);} 50% { opacity:.5; transform:scale(.8);} }
+        .nav-links { display: flex; align-items: center; gap: 28px; }
+        .nav-links a { color: var(--muted); text-decoration: none; font-size: 0.9rem; font-weight: 500; transition: color 0.2s; }
+        .nav-links a:hover { color: var(--text); }
+        .nav-cta { background: linear-gradient(135deg, #7c3aed, #ff3b3b); color: white; border: none; border-radius: 50px; padding: 9px 20px; font-size: 0.85rem; font-weight: 600; text-decoration: none; }
+        @media (max-width: 720px) { .nav-links a:not(.nav-cta) { display: none; } }
+
+        .hero { text-align: center; padding: 56px 0 20px; }
+        .hero-tag {
+            display: inline-flex; align-items: center; gap: 6px; font-size: 0.8rem; font-weight: 600;
+            color: var(--purple-light); background: rgba(124,58,237,0.15); border: 1px solid rgba(124,58,237,0.3);
+            padding: 5px 14px; border-radius: 50px; margin-bottom: 24px; letter-spacing: 0.5px; text-transform: uppercase;
+        }
+        .hero h1 { font-size: clamp(2.2rem, 5vw, 3.2rem); font-weight: 900; letter-spacing: -1.5px; margin-bottom: 14px; }
+        .hero h1 span { background: linear-gradient(135deg, #ff3b3b, #7c3aed); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .hero p { color: var(--muted); font-size: 1.02rem; max-width: 480px; margin: 0 auto; line-height: 1.6; }
+
+        /* BILLING TOGGLE */
+        .toggle-wrap { display: flex; align-items: center; justify-content: center; gap: 12px; margin: 36px 0 48px; }
+        .toggle-label { font-size: 0.85rem; color: var(--muted); font-weight: 600; }
+        .toggle-label.active { color: var(--text); }
+        .switch { position: relative; width: 46px; height: 26px; background: var(--surface2); border: 1px solid var(--border); border-radius: 50px; cursor: pointer; }
+        .switch .knob { position: absolute; top: 2px; left: 2px; width: 20px; height: 20px; background: var(--purple-light); border-radius: 50%; transition: transform 0.2s; }
+        .switch.on .knob { transform: translateX(20px); background: var(--red); }
+        .save-badge { font-size: 0.68rem; font-weight: 700; color: #4ade80; background: rgba(34,197,94,0.15); border: 1px solid rgba(34,197,94,0.3); padding: 2px 9px; border-radius: 50px; }
+
+        /* PRICING GRID */
+        .pricing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; align-items: stretch; }
+        @media (max-width: 860px) { .pricing-grid { grid-template-columns: 1fr; max-width: 400px; margin: 0 auto; } }
+
+        .plan-card {
+            background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+            padding: 32px 26px; display: flex; flex-direction: column; position: relative; transition: border-color 0.2s, transform 0.2s;
+        }
+        .plan-card:hover { transform: translateY(-3px); }
+        .plan-card.featured { border-color: rgba(124,58,237,0.5); background: linear-gradient(180deg, rgba(124,58,237,0.08), var(--surface) 40%); }
+        .plan-badge {
+            position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
+            background: linear-gradient(135deg, #7c3aed, #ff3b3b); color: white; font-size: 0.68rem; font-weight: 700;
+            padding: 4px 14px; border-radius: 50px; letter-spacing: 0.5px; text-transform: uppercase;
+        }
+        .plan-name { font-size: 1.1rem; font-weight: 700; margin-bottom: 6px; }
+        .plan-desc { font-size: 0.82rem; color: var(--muted); margin-bottom: 20px; line-height: 1.5; min-height: 38px; }
+        .plan-price { display: flex; align-items: baseline; gap: 4px; margin-bottom: 24px; }
+        .plan-price .amount { font-size: 2.4rem; font-weight: 900; letter-spacing: -1.5px; }
+        .plan-price .period { font-size: 0.85rem; color: var(--muted); }
+        .plan-cta {
+            display: block; text-align: center; text-decoration: none; padding: 11px; border-radius: 50px;
+            font-size: 0.88rem; font-weight: 700; margin-bottom: 28px; transition: opacity 0.2s, transform 0.2s;
+        }
+        .plan-cta:hover { transform: scale(1.02); }
+        .plan-cta.primary { background: linear-gradient(135deg, #7c3aed, #ff3b3b); color: white; }
+        .plan-cta.secondary { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
+        .plan-features { list-style: none; display: flex; flex-direction: column; gap: 12px; margin-top: auto; }
+        .plan-features li { display: flex; align-items: flex-start; gap: 10px; font-size: 0.85rem; color: #c4c4cf; line-height: 1.4; }
+        .plan-features li i { color: #4ade80; margin-top: 2px; flex-shrink: 0; }
+        .plan-features li.disabled { color: var(--muted); }
+        .plan-features li.disabled i { color: var(--muted); }
+
+        /* FAQ */
+        .section { padding: 76px 0 0; }
+        .section-title { font-size: clamp(1.6rem, 3.5vw, 2.1rem); font-weight: 800; letter-spacing: -1px; text-align: center; margin-bottom: 40px; }
+        .faq-list { max-width: 640px; margin: 0 auto; display: flex; flex-direction: column; gap: 0; }
+        .faq-item { padding: 20px 0; border-bottom: 1px solid var(--border); }
+        .faq-item:last-child { border-bottom: none; }
+        .faq-item h4 { font-size: 0.95rem; font-weight: 700; margin-bottom: 6px; }
+        .faq-item p { font-size: 0.86rem; color: var(--muted); line-height: 1.6; }
+
+        footer { text-align: center; padding: 60px 0 0; color: var(--muted); font-size: 0.8rem; }
+        footer a { color: var(--muted); text-decoration: none; }
+        footer a:hover { color: var(--text); }
+    </style>
+</head>
+<body>
+<div class="page-wrap">
+
+    <nav>
+        <a href="landing.html" class="logo"><span class="dot"></span>TubeTemp</a>
+        <div class="nav-links">
+            <a href="landing.html#features">Features</a>
+            <a href="landing.html#how-it-works">How it works</a>
+            <a href="index.html" class="nav-cta">Try it free</a>
+        </div>
+    </nav>
+
+    <div class="hero">
+        <div class="hero-tag"><i class="bi bi-tag-fill" style="color:var(--red)"></i> Pricing</div>
+        <h1>Simple plans for every <span>channel size</span></h1>
+        <p>Start free. Upgrade when you need more comments, more history, or more exports.</p>
+    </div>
+
+    <div class="toggle-wrap">
+        <span class="toggle-label active" id="labelMonthly">Monthly</span>
+        <div class="switch" id="billingSwitch"><div class="knob"></div></div>
+        <span class="toggle-label" id="labelYearly">Yearly</span>
+        <span class="save-badge">Save 20%</span>
+    </div>
+
+    <div class="pricing-grid">
+
+        <div class="plan-card">
+            <div class="plan-name">Free</div>
+            <div class="plan-desc">For casual checks before you watch or post.</div>
+            <div class="plan-price"><span class="amount">$0</span><span class="period">/mo</span></div>
+            <a href="index.html" class="plan-cta secondary">Get started</a>
+            <ul class="plan-features">
+                <li><i class="bi bi-check-circle-fill"></i> 5 analyses per day</li>
+                <li><i class="bi bi-check-circle-fill"></i> Up to 100 comments per video</li>
+                <li><i class="bi bi-check-circle-fill"></i> Sentiment breakdown &amp; mood score</li>
+                <li class="disabled"><i class="bi bi-x-circle"></i> CSV export</li>
+                <li class="disabled"><i class="bi bi-x-circle"></i> Analysis history</li>
+            </ul>
+        </div>
+
+        <div class="plan-card featured">
+            <div class="plan-badge">Most popular</div>
+            <div class="plan-name">Pro</div>
+            <div class="plan-desc">For creators who track every upload.</div>
+            <div class="plan-price">
+                <span class="amount" data-monthly="$9" data-yearly="$7.20">$9</span>
+                <span class="period">/mo</span>
+            </div>
+            <a href="index.html" class="plan-cta primary">Start free trial</a>
+            <ul class="plan-features">
+                <li><i class="bi bi-check-circle-fill"></i> Unlimited analyses</li>
+                <li><i class="bi bi-check-circle-fill"></i> Up to 500 comments per video</li>
+                <li><i class="bi bi-check-circle-fill"></i> Sentiment breakdown &amp; mood score</li>
+                <li><i class="bi bi-check-circle-fill"></i> CSV export</li>
+                <li><i class="bi bi-check-circle-fill"></i> 30-day analysis history</li>
+            </ul>
+        </div>
+
+        <div class="plan-card">
+            <div class="plan-name">Team</div>
+            <div class="plan-desc">For agencies and multi-channel networks.</div>
+            <div class="plan-price">
+                <span class="amount" data-monthly="$29" data-yearly="$23.20">$29</span>
+                <span class="period">/mo</span>
+            </div>
+            <a href="index.html" class="plan-cta secondary">Start free trial</a>
+            <ul class="plan-features">
+                <li><i class="bi bi-check-circle-fill"></i> Everything in Pro</li>
+                <li><i class="bi bi-check-circle-fill"></i> Up to 10 seats</li>
+                <li><i class="bi bi-check-circle-fill"></i> Unlimited analysis history</li>
+                <li><i class="bi bi-check-circle-fill"></i> Bulk CSV export</li>
+                <li><i class="bi bi-check-circle-fill"></i> Priority support</li>
+            </ul>
+        </div>
+
+    </div>
+
+    <div class="section">
+        <div class="section-title">Questions</div>
+        <div class="faq-list">
+            <div class="faq-item">
+                <h4>Can I cancel anytime?</h4>
+                <p>Yes. Pro and Team plans are billed monthly or yearly and can be cancelled anytime — you'll keep access until the end of your billing period.</p>
+            </div>
+            <div class="faq-item">
+                <h4>What counts as an "analysis"?</h4>
+                <p>Each time you paste a video URL and TubeTemp fetches and scores its comments, that's one analysis.</p>
+            </div>
+            <div class="faq-item">
+                <h4>Do you store the comments you analyze?</h4>
+                <p>Free plan analyses aren't saved. Pro and Team plans keep a history so you can revisit past results without re-running them.</p>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>Powered by YouTube Data API &amp; Sentiment Analysis &nbsp;·&nbsp; © 2026 TubeTemp &nbsp;·&nbsp; <a href="landing.html">Home</a></p>
+    </footer>
+
+</div>
+
+<script>
+    const billingSwitch = document.getElementById('billingSwitch');
+    const labelMonthly = document.getElementById('labelMonthly');
+    const labelYearly = document.getElementById('labelYearly');
+    const amounts = document.querySelectorAll('.amount[data-monthly]');
+
+    billingSwitch.addEventListener('click', () => {
+        const isYearly = billingSwitch.classList.toggle('on');
+        labelMonthly.classList.toggle('active', !isYearly);
+        labelYearly.classList.toggle('active', isYearly);
+        amounts.forEach(el => {
+            el.textContent = isYearly ? el.dataset.yearly : el.dataset.monthly;
+        });
+    });
+</script>
+</body>
+</html>

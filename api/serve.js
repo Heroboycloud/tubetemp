@@ -171,32 +171,6 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'OK', timestamp: new Date().toISOString() });
 });
 
-// --- Google sign-in (name + email only) ---
-// NOTE: this is an in-memory store for demo purposes. On Vercel, serverless
-// functions are stateless between cold starts, so this will NOT reliably
-// persist users in production — swap it for a real database (e.g. Postgres,
-// Supabase, MongoDB Atlas) before relying on this for real accounts.
-const users = [];
-
-app.post('/api/auth/google', (req, res) => {
-  const { name, email } = req.body || {};
-
-  if (!name || !email) {
-    return res.status(400).json({ error: 'Name and email are required' });
-  }
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    return res.status(400).json({ error: 'Invalid email address' });
-  }
-
-  let user = users.find(u => u.email === email);
-  if (!user) {
-    user = { name, email, createdAt: new Date().toISOString() };
-    users.push(user);
-  }
-
-  res.json({ success: true, user });
-});
-
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
