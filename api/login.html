@@ -148,8 +148,8 @@
         <div class="nav-links">
             <a href="#features">Features</a>
             <a href="#how-it-works">How it works</a>
-            <a href="pricing.html">Pricing</a>
-            <a href="index.html" class="nav-cta">Try it free</a>
+            <a href="/pricing">Pricing</a>
+            <a href="/dashboard" class="nav-cta">Try it free</a>
         </div>
     </nav>
 
@@ -227,7 +227,7 @@
     </div>
 
     <footer>
-        <p>Powered by YouTube Data API &amp; Sentiment Analysis &nbsp;·&nbsp; © 2026 TubeTemp &nbsp;·&nbsp; <a href="pricing.html">Pricing</a></p>
+        <p>Powered by YouTube Data API &amp; Sentiment Analysis &nbsp;·&nbsp; © 2026 TubeTemp &nbsp;·&nbsp; <a href="/pricing">Pricing</a></p>
     </footer>
 
 </div>
@@ -262,7 +262,7 @@
             if (!res.ok) throw new Error(data.error || 'Sign-in failed');
 
             localStorage.setItem('tubetemp_user', JSON.stringify(data.user));
-            window.location.href = 'index.html';
+            window.location.href = '/dashboard';
         } catch (err) {
             alert('Sign-in failed: ' + err.message);
         }
@@ -287,3 +287,4 @@
 </script>
 </body>
 </html>
+

@@ -11,7 +11,6 @@ const sentiment = new Sentiment();
 // Middleware
 app.use(cors());
 app.use(express.json());
-//app.use(express.static('public'));
 
 // YouTube API setup
 const youtube = google.youtube({
@@ -197,8 +196,19 @@ app.post('/api/auth/google', (req, res) => {
   res.json({ success: true, user });
 });
 
+// Login / landing page — first thing a visitor sees
 app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'login.html'));
+});
+
+// Dashboard — the analyzer tool (previously served at "/")
+app.get('/dashboard', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
+});
+
+// Pricing page
+app.get('/pricing', (req, res) => {
+  res.sendFile(path.join(__dirname, 'pricing.html'));
 });
 
 
@@ -209,3 +219,4 @@ app.listen(PORT, () => {
   console.log(`🚀 Server running at http://localhost:${PORT}`);
 });
 */
+
