@@ -1,3 +1,4 @@
 .vercel
 .env
 .replit
+node_modules/
