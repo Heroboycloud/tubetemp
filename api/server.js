@@ -217,6 +217,219 @@ app.post('/api/auth/google', async (req, res) => {
   }
 });
 
+// --- History (Supabase) ---
+// Expected table "history":
+//   id           text primary key   (client-generated, e.g. Date.now().toString(36) + random)
+//   user_email   text not null
+//   video_id     text
+//   url          text
+//   title        text
+//   mood         text
+//   analysis     jsonb              (full cached analysis payload, so past results reopen instantly)
+//   created_at   timestamptz default now()
+// If your table uses different column names, adjust the mappings below to match.
+
+// Save/update a single history entry — called automatically after each analysis
+app.post('/api/history', async (req, res) => {
+  const { id, url, videoId, title, mood, timestamp, data, userEmail } = req.body || {};
+
+  if (!userEmail) {
+    return res.status(400).json({ error: 'userEmail is required' });
+  }
+  if (!id) {
+    return res.status(400).json({ error: 'id is required' });
+  }
+
+  try {
+    const { data: saved, error } = await supabase
+      .from('history')
+      .upsert({
+        id,
+        user_email: userEmail,
+        video_id: videoId,
+        url,
+        title,
+        mood,
+        analysis: data,
+        created_at: timestamp ? new Date(timestamp).toISOString() : new Date().toISOString()
+      }, { onConflict: 'id' })
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    res.json({ success: true, item: saved });
+  } catch (err) {
+    console.error('History save error:', err.message);
+    res.status(500).json({ error: 'Failed to save history item' });
+  }
+});
+
+// Batch sync — sends the full local (localStorage) history at once
+app.post('/api/history/sync', async (req, res) => {
+  const { items, userEmail } = req.body || {};
+
+  if (!userEmail) {
+    return res.status(400).json({ error: 'userEmail is required' });
+  }
+  if (!Array.isArray(items) || items.length === 0) {
+    return res.status(400).json({ error: 'No items to sync' });
+  }
+
+  try {
+    const rows = items.map(item => ({
+      id: item.id,
+      user_email: userEmail,
+      video_id: item.videoId,
+      url: item.url,
+      title: item.title,
+      mood: item.mood,
+      analysis: item.data,
+      created_at: item.timestamp ? new Date(item.timestamp).toISOString() : new Date().toISOString()
+    }));
+
+    const { error } = await supabase
+      .from('history')
+      .upsert(rows, { onConflict: 'id' });
+
+    if (error) throw error;
+
+    res.json({ success: true, synced: rows.length });
+  } catch (err) {
+    console.error('History sync error:', err.message);
+    res.status(500).json({ error: 'Sync failed' });
+  }
+});
+
+// Fetch a user's saved history — e.g. to restore on a new device/browser
+app.get('/api/history/:email', async (req, res) => {
+  const { email } = req.params;
+  const limit = Math.min(parseInt(req.query.limit) || 50, 200);
+
+  try {
+    const { data, error } = await supabase
+      .from('history')
+      .select('*')
+      .eq('user_email', email)
+      .order('created_at', { ascending: false })
+      .limit(limit);
+
+    if (error) throw error;
+
+    res.json({ success: true, items: data });
+  } catch (err) {
+    console.error('History fetch error:', err.message);
+    res.status(500).json({ error: 'Failed to fetch history' });
+  }
+});
+
+// Delete a single history item
+app.delete('/api/history/:id', async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const { error } = await supabase.from('history').delete().eq('id', id);
+    if (error) throw error;
+    res.json({ success: true });
+  } catch (err) {
+    console.error('History delete error:', err.message);
+    res.status(500).json({ error: 'Failed to delete history item' });
+  }
+});
+
+// Clear all history for a user
+app.delete('/api/history', async (req, res) => {
+  const { email } = req.query;
+  if (!email) return res.status(400).json({ error: 'email query param is required' });
+
+  try {
+    const { error } = await supabase.from('history').delete().eq('user_email', email);
+    if (error) throw error;
+    res.json({ success: true });
+  } catch (err) {
+    console.error('History clear error:', err.message);
+    res.status(500).json({ error: 'Failed to clear history' });
+  }
+});
+
+// --- User profile & usage (Supabase) ---
+// Reuses the existing "users" table from /api/auth/google.
+// If you add a "plan" column (text, default 'free'), the routes below
+// are already set up to read/update it.
+
+// Fetch a user's profile
+app.get('/api/user/:email', async (req, res) => {
+  const { email } = req.params;
+
+  try {
+    const { data, error } = await supabase
+      .from('users')
+      .select('*')
+      .eq('email', email)
+      .maybeSingle();
+
+    if (error) throw error;
+    if (!data) return res.status(404).json({ error: 'User not found' });
+
+    res.json({ success: true, user: data });
+  } catch (err) {
+    console.error('User fetch error:', err.message);
+    res.status(500).json({ error: 'Failed to fetch user' });
+  }
+});
+
+// Update a user's profile (e.g. name, plan)
+app.patch('/api/user/:email', async (req, res) => {
+  const { email } = req.params;
+  const { name, plan } = req.body || {};
+  const updates = {};
+  if (name) updates.name = name;
+  if (plan) updates.plan = plan;
+
+  if (Object.keys(updates).length === 0) {
+    return res.status(400).json({ error: 'Nothing to update' });
+  }
+
+  try {
+    const { data, error } = await supabase
+      .from('users')
+      .update(updates)
+      .eq('email', email)
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    res.json({ success: true, user: data });
+  } catch (err) {
+    console.error('User update error:', err.message);
+    res.status(500).json({ error: 'Failed to update user' });
+  }
+});
+
+// Usage stats for a user — handy for enforcing the Free plan's
+// "5 analyses per day" limit, or showing a usage widget in the dashboard
+app.get('/api/usage/:email', async (req, res) => {
+  const { email } = req.params;
+  const startOfDay = new Date();
+  startOfDay.setHours(0, 0, 0, 0);
+
+  try {
+    const { count, error } = await supabase
+      .from('history')
+      .select('id', { count: 'exact', head: true })
+      .eq('user_email', email)
+      .gte('created_at', startOfDay.toISOString());
+
+    if (error) throw error;
+
+    res.json({ success: true, analysesToday: count || 0, resetsAt: new Date(startOfDay.getTime() + 86400000).toISOString() });
+  } catch (err) {
+    console.error('Usage fetch error:', err.message);
+    res.status(500).json({ error: 'Failed to fetch usage' });
+  }
+});
+
 // Login / landing page — first thing a visitor sees
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'login.html'));

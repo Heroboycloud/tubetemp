@@ -774,6 +774,13 @@
     /* ===================== HISTORY (localStorage, permanent + server sync) ===================== */
     const HISTORY_KEY = 'tubetemp_history';
 
+    function getUserEmail() {
+        try {
+            const raw = localStorage.getItem('tubetemp_user');
+            return raw ? (JSON.parse(raw).email || null) : null;
+        } catch (e) { return null; }
+    }
+
     function getHistory() {
         try {
             return JSON.parse(localStorage.getItem(HISTORY_KEY)) || [];
@@ -880,11 +887,13 @@
 
     /* Send full local history to the server (manual sync button) */
     async function syncEntryToServer(entry) {
+        const userEmail = getUserEmail();
+        if (!userEmail) return; // not signed in server-side yet — stays local only
         try {
             await fetch('/api/history', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(entry)
+                body: JSON.stringify({ ...entry, userEmail })
             });
             const items = getHistory().map(i => i.id === entry.id ? { ...i, synced: true } : i);
             saveHistory(items);
@@ -895,9 +904,15 @@
     }
     syncHistoryBtn.addEventListener('click', async () => {
         const items = getHistory();
+        const userEmail = getUserEmail();
         if (!items.length) {
             syncStatusEl.textContent = 'No history to sync yet';
             syncStatusEl.className = 'sync-status';
+            return;
+        }
+        if (!userEmail) {
+            syncStatusEl.textContent = 'Sign in to sync history to the server';
+            syncStatusEl.className = 'sync-status error';
             return;
         }
         syncHistoryBtn.disabled = true;
@@ -907,7 +922,7 @@
             const res = await fetch('/api/history/sync', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ items })
+                body: JSON.stringify({ items, userEmail })
             });
             if (!res.ok) throw new Error('Sync failed');
             saveHistory(items.map(i => ({ ...i, synced: true })));
