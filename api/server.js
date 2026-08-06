@@ -3,7 +3,8 @@ const express = require('express');
 const { google } = require('googleapis');
 const Sentiment = require('sentiment');
 const cors = require('cors');
-
+const dotenv=require("dotenv");
+dotenv.config();
 const app = express();
 const PORT = 5000;
 const sentiment = new Sentiment();
@@ -239,4 +240,3 @@ app.listen(PORT, () => {
   console.log(`🚀 Server running at http://localhost:${PORT}`);
 });
 */
-

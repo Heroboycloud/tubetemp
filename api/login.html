@@ -138,6 +138,135 @@
         footer { text-align: center; padding: 40px 0 0; color: var(--muted); font-size: 0.8rem; }
         footer a { color: var(--muted); text-decoration: none; }
         footer a:hover { color: var(--text); }
+
+        /* NAV CTA — Try it free */
+        .nav-cta {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 4px 18px rgba(124,58,237,0.35);
+            transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+        }
+        .nav-cta:hover {
+            transform: translateY(-2px) scale(1.04);
+            box-shadow: 0 6px 24px rgba(124,58,237,0.5), 0 0 0 1px rgba(255,255,255,0.08);
+            filter: brightness(1.08);
+        }
+        .nav-cta i { font-size: 0.85rem; }
+
+        /* SIGN-IN CARD */
+        .signin-card {
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 14px;
+            padding: 22px 30px 20px;
+            border-radius: 20px;
+            background: linear-gradient(180deg, rgba(124,58,237,0.12), rgba(255,59,59,0.06));
+            border: 1px solid rgba(124,58,237,0.35);
+            box-shadow: 0 0 0 1px rgba(255,255,255,0.03), 0 12px 40px rgba(124,58,237,0.18);
+            position: relative;
+            overflow: hidden;
+        }
+        .signin-card::before {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            padding: 2px;
+            border-radius: 20px;
+            background: linear-gradient(135deg, var(--purple), var(--red), var(--purple));
+            background-size: 200% 200%;
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            animation: borderFlow 4s linear infinite;
+            opacity: 0.6;
+            pointer-events: none;
+        }
+        @keyframes borderFlow { 0% { background-position: 0% 50%; } 100% { background-position: 200% 50%; } }
+        .signin-card-label {
+            font-size: 0.78rem;
+            font-weight: 700;
+            letter-spacing: 0.4px;
+            color: var(--purple-light);
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        #googleSignInBtn, #googleSignInBtnBottom {
+            transform: scale(1.12);
+            transition: transform 0.2s ease;
+        }
+        .signin-card:hover #googleSignInBtn { transform: scale(1.17); }
+        .signin-perks {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            justify-content: center;
+            font-size: 0.72rem;
+            color: var(--muted);
+        }
+        .signin-perks span { display: inline-flex; align-items: center; gap: 4px; }
+        .signin-perks i { color: #4ade80; font-size: 0.8rem; }
+
+        .cta-band #googleSignInBtnBottom { transform: scale(1.15); }
+
+        /* PREVIEW BANNER */
+        .preview-section { padding: 48px 0 0; }
+        .browser-frame {
+            max-width: 780px;
+            margin: 0 auto;
+            border-radius: var(--radius);
+            overflow: hidden;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4), 0 0 0 1px rgba(124,58,237,0.08);
+        }
+        .browser-bar {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 10px 14px;
+            background: var(--surface2);
+            border-bottom: 1px solid var(--border);
+        }
+        .browser-bar span { width: 10px; height: 10px; border-radius: 50%; background: #3a3a44; }
+        .browser-bar span:nth-child(1) { background: #ff5f57; }
+        .browser-bar span:nth-child(2) { background: #febc2e; }
+        .browser-bar span:nth-child(3) { background: #28c840; }
+        .browser-bar-url {
+            margin-left: 10px;
+            font-size: 0.72rem;
+            color: var(--muted);
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 50px;
+            padding: 3px 12px;
+            flex: 1;
+            max-width: 260px;
+        }
+        .browser-content {
+            position: relative;
+            aspect-ratio: 16 / 9;
+            background: radial-gradient(circle at 30% 20%, rgba(124,58,237,0.12), transparent 60%),
+                        radial-gradient(circle at 80% 80%, rgba(255,59,59,0.08), transparent 55%),
+                        var(--bg);
+        }
+        .browser-content img {
+            width: 100%; height: 100%; object-fit: cover; display: block;
+        }
+        .preview-placeholder {
+            position: absolute; inset: 0;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            gap: 10px; color: var(--muted); text-align: center; padding: 20px;
+        }
+        .preview-placeholder i { font-size: 2.4rem; color: var(--purple-light); opacity: 0.6; }
+        .preview-placeholder p { font-size: 0.85rem; line-height: 1.5; }
+        .preview-placeholder span { color: #55556a; font-size: 0.75rem; }
+        .preview-caption {
+            text-align: center; color: var(--muted); font-size: 0.8rem; margin-top: 14px;
+        }
     </style>
 </head>
 <body>
@@ -149,7 +278,7 @@
             <a href="#features">Features</a>
             <a href="#how-it-works">How it works</a>
             <a href="/pricing">Pricing</a>
-            <a href="/dashboard" class="nav-cta">Try it free</a>
+            <a href="/dashboard" class="nav-cta">Try it free <i class="bi bi-arrow-right"></i></a>
         </div>
     </nav>
 
@@ -160,8 +289,15 @@
         <p>TubeTemp reads thousands of YouTube comments in seconds and tells you exactly how viewers really feel — positive, negative, or somewhere in between.</p>
 
         <div class="hero-actions">
-            <div id="googleSignInBtn"></div>
-            <span class="hero-fallback-note">Sign in with your Google name and email — no password needed.</span>
+            <div class="signin-card">
+                <span class="signin-card-label"><i class="bi bi-stars"></i> Get started free</span>
+                <div id="googleSignInBtn"></div>
+                <div class="signin-perks">
+                    <span><i class="bi bi-check-circle-fill"></i> No password</span>
+                    <span><i class="bi bi-check-circle-fill"></i> No credit card</span>
+                    <span><i class="bi bi-check-circle-fill"></i> Ready in seconds</span>
+                </div>
+            </div>
         </div>
 
         <div class="demo-strip">
@@ -170,6 +306,26 @@
             <div class="demo-stat"><div class="val" style="color:#94a3b8">20%</div><div class="lbl">Neutral</div></div>
             <div class="demo-stat"><div class="val" style="color:#a78bfa">500</div><div class="lbl">Comments Scanned</div></div>
         </div>
+    </div>
+
+    <!-- Product Preview -->
+    <div class="preview-section">
+        <div class="browser-frame">
+            <div class="browser-bar">
+                <span></span><span></span><span></span>
+                <span class="browser-bar-url"><i class="bi bi-lock-fill" style="font-size:0.62rem;margin-right:4px"></i>tubetemp.app/dashboard</span>
+            </div>
+            <div class="browser-content">
+                <!-- Swap the src below for a real screenshot of the chat page + YouTube URL box -->
+                <img src="dashboard-preview.png" alt="TubeTemp dashboard showing the chat-style YouTube URL box and sentiment results"
+                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                <div class="preview-placeholder" style="display:none">
+                    <i class="bi bi-image"></i>
+                    <p>Screenshot goes here<br><span>Chat-style dashboard with the YouTube URL box front and center</span></p>
+                </div>
+            </div>
+        </div>
+        <p class="preview-caption">A live look at the TubeTemp dashboard — paste a link, get the mood.</p>
     </div>
 
     <!-- Features -->
